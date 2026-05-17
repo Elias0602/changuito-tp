@@ -26,7 +26,7 @@ export async function listProducts(req: Request, res: Response, next: NextFuncti
       orderBy: { id: "desc" },
     });
 
-    let resultado = productos.map((p) => {
+    let resultado = productos.map((p: any) => {
       const oferta = p.ofertas[0];
       return {
         id: p.id,
@@ -44,7 +44,7 @@ export async function listProducts(req: Request, res: Response, next: NextFuncti
     });
 
     if (onlyOffers === "true") {
-      resultado = resultado.filter((p) => p.oferta);
+      resultado = resultado.filter((p: any) => p.oferta);
     }
 
     res.json(resultado);
@@ -106,7 +106,7 @@ export async function recomendaciones(_req: Request, res: Response, next: NextFu
     });
 
     const map = (arr: typeof imperdibles) =>
-      arr.map((p) => {
+      arr.map((p: any) => {
         const oferta = p.ofertas[0];
         return {
           id: p.id,

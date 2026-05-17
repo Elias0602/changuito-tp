@@ -38,7 +38,7 @@ export async function checkout(req: AuthRequest, res: Response, next: NextFuncti
 
     const descuento = await calcularDescuento(userId);
     const subtotal = cart.items.reduce(
-      (acc, it) => acc + it.precioSnapshot * it.cantidad,
+      (acc: number, it: any) => acc + it.precioSnapshot * it.cantidad,
       0
     );
     const montoDescuento = +(subtotal * (descuento.porcentaje / 100)).toFixed(2);
@@ -49,7 +49,7 @@ export async function checkout(req: AuthRequest, res: Response, next: NextFuncti
     const pago = await procesarPago(metodoPago, total, `cart-${cart.id}`);
     if (!pago.ok) throw new HttpError(402, "Pago rechazado, intentá con otro medio");
 
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async (tx: any) => {
       // Descontar stock
       for (const it of cart.items) {
         await tx.product.update({
@@ -70,7 +70,7 @@ export async function checkout(req: AuthRequest, res: Response, next: NextFuncti
           metodoPago,
           estado: "PENDIENTE",
           items: {
-            create: cart.items.map((it) => ({
+            create: cart.items.map((it: any) => ({
               productId: it.productId,
               cantidad: it.cantidad,
               precioSnapshot: it.precioSnapshot,

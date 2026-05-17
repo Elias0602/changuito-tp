@@ -43,7 +43,7 @@ export async function getMyCart(req: AuthRequest, res: Response, next: NextFunct
 
     const descuento = await calcularDescuento(userId);
     const subtotal = cart.items.reduce(
-      (acc, it) => acc + it.precioSnapshot * it.cantidad,
+      (acc: number, it: any) => acc + it.precioSnapshot * it.cantidad,
       0
     );
     const montoDescuento = +(subtotal * (descuento.porcentaje / 100)).toFixed(2);

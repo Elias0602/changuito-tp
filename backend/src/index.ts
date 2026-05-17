@@ -18,12 +18,13 @@ const PORT = Number(process.env.PORT || 4000);
 const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:5173").split(",");
 
 app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin || allowedOrigins.some(o => origin.startsWith(o.trim()))) {
-      cb(null, true);
-    } else {
-      cb(new Error("CORS: origen no permitido"));
-    }
+  origin: (origin: string | undefined, cb: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin) return cb(null, true);
+    const ok = allowedOrigins.some(o => origin.startsWith(o.trim()))
+      || origin.endsWith(".netlify.app")
+      || origin.includes("localhost");
+    if (ok) cb(null, true);
+    else cb(new Error("CORS: origen no permitido"));
   },
   credentials: true,
 }));
