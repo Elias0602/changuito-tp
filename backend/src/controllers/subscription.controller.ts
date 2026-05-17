@@ -26,7 +26,7 @@ export async function planes(_req: AuthRequest, res: Response, next: NextFunctio
       {
         plan: "ESTANDAR",
         nombre: "Estándar",
-        descripcion: "25% de descuento en envíos + ofertas exclusivas.",
+        descripcion: "25% de descuento en envíos + soporte prioritario.",
         descuentoEnvio: 25,
         descuentoProductos: 0,
         envioGratis: false,
