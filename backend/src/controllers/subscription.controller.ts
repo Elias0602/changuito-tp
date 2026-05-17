@@ -36,7 +36,7 @@ export async function planes(_req: AuthRequest, res: Response, next: NextFunctio
       {
         plan: "PLUS",
         nombre: "Plus",
-        descripcion: "50% off en todos los productos + envío gratis ilimitado.",
+        descripcion: "50% off en todos los productos + envío gratis ilimitado + soporte prioritario.",
         descuentoEnvio: 100,
         descuentoProductos: 50,
         envioGratis: true,
