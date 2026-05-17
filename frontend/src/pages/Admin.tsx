@@ -62,7 +62,7 @@ export function Admin() {
         notify("Producto actualizado");
       } else {
         const p = await api<Product>("/products", { method: "POST", body });
-        setProducts((prev) => [{ ...p, category: categories.find(c => c.id === p.categoryId)! as any, precioFinal: p.precio, oferta: null }, ...prev]);
+        setProducts((prev) => [{ ...p, category: categories.find(c => c.id === p.category?.id)! as any, precioFinal: p.precio, oferta: null }, ...prev]);
         notify("Producto creado");
       }
       setPForm({ nombre: "", descripcion: "", precio: "", stock: "", categoryId: "", imagenUrl: "" });
