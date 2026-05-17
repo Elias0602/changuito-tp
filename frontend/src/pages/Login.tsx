@@ -57,7 +57,7 @@ export function Login() {
               <div style={{ fontSize: 36 }}>🛒</div>
               <h2 style={{ marginTop: 8 }}>Ingresá a tu cuenta</h2>
               <p className="muted" style={{ fontSize: 13, marginTop: 4 }}>
-                Bienvenido/a de nuevo a Changuito
+                Bienvenido/a a Autoservicio El Chanquito
               </p>
             </div>
 
