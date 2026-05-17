@@ -5,6 +5,7 @@ import { Product } from "../types";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { formatPrice } from "../components/ProductCard";
+import { ProductImage } from "../components/ProductImage";
 
 export function ProductDetail() {
   const { id } = useParams();
@@ -48,9 +49,10 @@ export function ProductDetail() {
       </div>
 
       <div className="detail-layout">
-        <img
-          src={p.imagenUrl || "https://via.placeholder.com/500x500?text=Sin+imagen"}
-          alt={p.nombre}
+        <ProductImage
+          nombre={p.nombre}
+          imagenUrl={p.imagenUrl}
+          categoria={p.category}
           className="detail-img"
         />
 

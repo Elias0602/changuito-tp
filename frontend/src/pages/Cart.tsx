@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { formatPrice } from "../components/ProductCard";
+import { ProductImage } from "../components/ProductImage";
 import { useState } from "react";
 
 export function CartPage() {
@@ -62,9 +63,10 @@ export function CartPage() {
         <div className="cart-items">
           {items.map((item) => (
             <div key={item.id} className="cart-item">
-              <img
-                src={item.product.imagenUrl || "https://via.placeholder.com/80x80?text="}
-                alt={item.product.nombre}
+              <ProductImage
+                nombre={item.product.nombre}
+                imagenUrl={item.product.imagenUrl}
+                categoria={item.product.category}
               />
               <div>
                 <div style={{ fontWeight: 500 }}>{item.product.nombre}</div>

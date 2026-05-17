@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api/client";
 import { Order } from "../types";
 import { formatPrice } from "../components/ProductCard";
+import { ProductImage } from "../components/ProductImage";
 
 const ESTADO_LABELS: Record<string, string> = {
   PENDIENTE: "pendiente",
@@ -48,9 +49,10 @@ export function MisPedidos() {
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
                 {o.items.map((it) => (
                   <div key={it.id} style={{ display: "flex", alignItems: "center", gap: 8, background: "#f9f9f9", borderRadius: 4, padding: "6px 10px" }}>
-                    <img
-                      src={it.product.imagenUrl || "https://via.placeholder.com/40"}
-                      alt=""
+                    <ProductImage
+                      nombre={it.product.nombre}
+                      imagenUrl={it.product.imagenUrl}
+                      categoria={it.product.category}
                       style={{ width: 36, height: 36, objectFit: "cover", borderRadius: 4 }}
                     />
                     <div style={{ fontSize: 13 }}>

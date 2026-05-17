@@ -3,6 +3,7 @@ import { Product } from "../types";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import { ProductImage } from "./ProductImage";
 
 export function formatPrice(n: number): string {
   return n.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
@@ -36,9 +37,10 @@ export function ProductCard({ p }: { p: Product }) {
   return (
     <Link to={`/producto/${p.id}`} className="product-card" style={{ textDecoration: "none", color: "inherit" }}>
       {p.oferta?.esImperdible && <span className="badge-imperdible">🔥 Imperdible</span>}
-      <img
-        src={p.imagenUrl || "https://via.placeholder.com/300x300?text=Sin+imagen"}
-        alt={p.nombre}
+      <ProductImage
+        nombre={p.nombre}
+        imagenUrl={p.imagenUrl}
+        categoria={p.category}
         className="product-img"
       />
       <div className="product-body">
