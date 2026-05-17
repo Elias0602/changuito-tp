@@ -160,11 +160,6 @@ export function Subscriptions() {
                 <li style={{ padding: "4px 0", color: "#1e8449" }}>
                   ✅ Soporte prioritario
                 </li>
-                {plan.plan !== "BASICO" && (
-                  <li style={{ padding: "4px 0", color: "#1e8449" }}>
-                    ✅ Ofertas exclusivas
-                  </li>
-                )}
               </ul>
 
               <button
