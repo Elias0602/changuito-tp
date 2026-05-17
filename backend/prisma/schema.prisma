@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id               Int      @id @default(autoincrement())
+  nombre           String
+  email            String   @unique
+  password         String
+  role             String   @default("CUSTOMER")
+  twoFactorSecret  String?
+  twoFactorEnabled Boolean  @default(false)
+  esJubilado       Boolean  @default(false)
+  esEstudiante     Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  adminProfile     AdminProfile?
+  restockerProfile RestockerProfile?
+  carts            Cart[]
+  orders           Order[]
+  subscriptions    Subscription[]
+
+  @@index([email])
+}
+
+model AdminProfile {
+  id                 Int     @id @default(autoincrement())
+  userId             Int     @unique
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nivelSeguridad     String  @default("ESTANDAR")
+  puedeDescuentos    Boolean @default(false)
+  puedeMantenimiento Boolean @default(false)
+  puedePrecios       Boolean @default(false)
+  puedeStock         Boolean @default(false)
+}
+
+model RestockerProfile {
+  id     Int    @id @default(autoincrement())
+  userId Int    @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  zona   String @default("DEPOSITO")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  nombre    String    @unique
+  slug      String    @unique
+  icono     String?
+  productos Product[]
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  precio      Float
+  stock       Int        @default(0)
+  imagenUrl   String?
+  categoryId  Int
+  category    Category   @relation(fields: [categoryId], references: [id])
+  ofertas     Offer[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([categoryId])
+}
+
+model Offer {
+  id           Int      @id @default(autoincrement())
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  porcentaje   Float
+  fechaInicio  DateTime @default(now())
+  fechaFin     DateTime
+  esImperdible Boolean  @default(false)
+  activa       Boolean  @default(true)
+
+  @@index([productId])
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  estado    String     @default("ACTIVO")
+  items     CartItem[]
+  order     Order?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId])
+}
+
+model CartItem {
+  id             Int     @id @default(autoincrement())
+  cartId         Int
+  cart           Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId      Int
+  product        Product @relation(fields: [productId], references: [id])
+  cantidad       Int
+  precioSnapshot Float
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  cartId     Int         @unique
+  cart       Cart        @relation(fields: [cartId], references: [id])
+  userId     Int
+  user       User        @relation(fields: [userId], references: [id])
+  subtotal   Float
+  descuento  Float       @default(0)
+  envio      Float       @default(0)
+  montoFinal Float
+  metodoPago String
+  estado     String      @default("PENDIENTE")
+  fechaPago  DateTime    @default(now())
+  items      OrderItem[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id             Int     @id @default(autoincrement())
+  orderId        Int
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      Int
+  product        Product @relation(fields: [productId], references: [id])
+  cantidad       Int
+  precioSnapshot Float
+}
+
+model Subscription {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan             String
+  periodo          String
+  precio           Float
+  fechaInicio      DateTime @default(now())
+  fechaVencimiento DateTime
+  activa           Boolean  @default(true)
+
+  @@index([userId])
+}
