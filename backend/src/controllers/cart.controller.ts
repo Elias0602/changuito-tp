@@ -3,7 +3,7 @@ import { prisma } from "../config/prisma";
 import { AuthRequest } from "../types";
 import { cartAddSchema, cartUpdateSchema } from "../utils/validators";
 import { HttpError } from "../middlewares/errorHandler";
-import { calcularDescuento, precioConOferta } from "../services/discount.service";
+import { calcularDescuento, aplicarOferta } from "../services/discount.service";
 
 async function getOrCreateActiveCart(userId: number) {
   let cart = await prisma.cart.findFirst({
@@ -87,7 +87,7 @@ export async function addToCart(req: AuthRequest, res: Response, next: NextFunct
       throw new HttpError(409, `Stock insuficiente (disponible: ${producto.stock})`);
 
     const cart = await getOrCreateActiveCart(userId);
-    const precio = precioConOferta(producto.precio, producto.ofertas[0]?.porcentaje);
+    const precio = aplicarOferta(producto.precio, producto.ofertas[0]?.porcentaje);
 
     const existing = await prisma.cartItem.findUnique({
       where: { cartId_productId: { cartId: cart.id, productId: producto.id } },
