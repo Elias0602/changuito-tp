@@ -159,8 +159,26 @@ export function Checkout() {
               </div>
             )}
             <div className="summary-row" style={{ color: resumen.envioGratis ? "#00a650" : undefined }}>
-              <span>Envío</span>
-              <span>{resumen.envioGratis ? "🎉 GRATIS" : formatPrice(resumen.envio)}</span>
+              <span>
+                Envío
+                {resumen.descuentoEnvio > 0 && !resumen.envioGratis && (
+                  <span style={{ color: "#1e8449", fontSize: 11, marginLeft: 6 }}>
+                    −{resumen.descuentoEnvio}%
+                  </span>
+                )}
+              </span>
+              <span>
+                {resumen.envioGratis ? "🎉 GRATIS" : (
+                  <>
+                    {resumen.descuentoEnvio > 0 && (
+                      <span style={{ textDecoration: "line-through", color: "#999", fontSize: 12, marginRight: 6 }}>
+                        {formatPrice(resumen.envioBase)}
+                      </span>
+                    )}
+                    {formatPrice(resumen.envio)}
+                  </>
+                )}
+              </span>
             </div>
             <div className="summary-row total">
               <span>Total</span>

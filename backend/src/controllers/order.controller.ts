@@ -42,7 +42,8 @@ export async function checkout(req: AuthRequest, res: Response, next: NextFuncti
       0
     );
     const montoDescuento = +(subtotal * (descuento.porcentaje / 100)).toFixed(2);
-    const envio = descuento.envioGratis ? 0 : 1500;
+    const envioBase = 1500;
+    const envio = +(envioBase * (1 - descuento.descuentoEnvio / 100)).toFixed(2);
     const total = +(subtotal - montoDescuento + envio).toFixed(2);
 
     // Pago simulado

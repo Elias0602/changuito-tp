@@ -141,15 +141,35 @@ export function Subscriptions() {
                 <div className="muted" style={{ fontSize: 13 }}>Solo disponible anual</div>
               )}
 
-              {plan.plan === "PLUS" && (
-                <div style={{ background: "#fff8e1", borderRadius: 4, padding: "8px 10px", margin: "12px 0", fontSize: 12 }}>
-                  Incluye <strong>50% de descuento + envío gratis</strong> en todas tus compras.
-                </div>
-              )}
+              {/* Beneficios concretos del plan */}
+              <ul style={{ listStyle: "none", padding: 0, margin: "16px 0", fontSize: 13, textAlign: "left" }}>
+                {plan.descuentoProductos > 0 && (
+                  <li style={{ padding: "4px 0", color: "#1e8449" }}>
+                    ✅ <strong>{plan.descuentoProductos}% off</strong> en todos los productos
+                  </li>
+                )}
+                {plan.envioGratis ? (
+                  <li style={{ padding: "4px 0", color: "#1e8449" }}>
+                    ✅ <strong>Envío gratis</strong> ilimitado
+                  </li>
+                ) : plan.descuentoEnvio > 0 ? (
+                  <li style={{ padding: "4px 0", color: "#1e8449" }}>
+                    ✅ <strong>{plan.descuentoEnvio}% off</strong> en envíos
+                  </li>
+                ) : null}
+                <li style={{ padding: "4px 0", color: "#1e8449" }}>
+                  ✅ Soporte prioritario
+                </li>
+                {plan.plan !== "BASICO" && (
+                  <li style={{ padding: "4px 0", color: "#1e8449" }}>
+                    ✅ Ofertas exclusivas
+                  </li>
+                )}
+              </ul>
 
               <button
                 className="btn-primary"
-                style={{ marginTop: 20, background: isActivo ? "#ccc" : COLORES[plan.plan] }}
+                style={{ marginTop: 8, background: isActivo ? "#ccc" : COLORES[plan.plan] }}
                 disabled={isActivo || loading === plan.plan}
                 onClick={() => subscribir(plan.plan)}
               >
@@ -163,13 +183,15 @@ export function Subscriptions() {
       </div>
 
       <div style={{ background: "white", borderRadius: 8, padding: 20, marginTop: 28, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-        <h3 style={{ marginBottom: 12 }}>💰 Descuentos dinámicos disponibles</h3>
+        <h3 style={{ marginBottom: 12 }}>💰 Descuentos disponibles</h3>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
           <tbody>
             {[
-              ["👴 Jubilado", "21% de descuento", "Sin costo adicional"],
-              ["🎓 Estudiante", "15% de descuento", "Sin costo adicional"],
-              ["⭐ Suscriptor", "50% de descuento + envío gratis", "Requiere suscripción activa"],
+              ["👴 Jubilado", "21% en productos", "Sin costo adicional"],
+              ["🎓 Estudiante", "15% en productos", "Sin costo adicional"],
+              ["📦 Plan Básico", "10% en envíos", "Requiere suscripción"],
+              ["📦 Plan Estándar", "25% en envíos", "Requiere suscripción"],
+              ["⭐ Plan Plus", "50% en productos + envío gratis", "Requiere suscripción Plus"],
             ].map(([quien, desc, nota]) => (
               <tr key={quien} style={{ borderBottom: "1px solid #ededed" }}>
                 <td style={{ padding: "10px 8px", fontWeight: 600 }}>{quien}</td>

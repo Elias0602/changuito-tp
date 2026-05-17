@@ -46,6 +46,8 @@ export interface CartResumen {
   descuentoMonto: number;
   motivosDescuento: string[];
   envio: number;
+  envioBase: number;
+  descuentoEnvio: number;
   envioGratis: boolean;
   total: number;
 }
@@ -96,6 +98,9 @@ export interface Plan {
   plan: "BASICO" | "ESTANDAR" | "PLUS";
   nombre: string;
   descripcion: string;
+  descuentoEnvio: number;
+  descuentoProductos: number;
+  envioGratis: boolean;
   mensual: number | null;
   anual: number | null;
 }

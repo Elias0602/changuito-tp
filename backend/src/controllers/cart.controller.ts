@@ -47,7 +47,8 @@ export async function getMyCart(req: AuthRequest, res: Response, next: NextFunct
       0
     );
     const montoDescuento = +(subtotal * (descuento.porcentaje / 100)).toFixed(2);
-    const envio = descuento.envioGratis ? 0 : subtotal > 0 ? 1500 : 0;
+    const envioBase = subtotal > 0 ? 1500 : 0;
+    const envio = +(envioBase * (1 - descuento.descuentoEnvio / 100)).toFixed(2);
     const total = +(subtotal - montoDescuento + envio).toFixed(2);
 
     res.json({
@@ -58,6 +59,8 @@ export async function getMyCart(req: AuthRequest, res: Response, next: NextFunct
         descuentoMonto: montoDescuento,
         motivosDescuento: descuento.motivos,
         envio,
+        envioBase,
+        descuentoEnvio: descuento.descuentoEnvio,
         envioGratis: descuento.envioGratis,
         total,
       },
