@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { prisma } from "../config/prisma";
 import { productCreateSchema, productUpdateSchema } from "../utils/validators";
 import { HttpError } from "../middlewares/errorHandler";
-import { precioConOferta } from "../services/discount.service";
+import { aplicarOferta } from "../services/discount.service";
 
 /** GET /productos?search=&categoryId=&onlyOffers=true */
 export async function listProducts(req: Request, res: Response, next: NextFunction) {
@@ -33,7 +33,7 @@ export async function listProducts(req: Request, res: Response, next: NextFuncti
         nombre: p.nombre,
         descripcion: p.descripcion,
         precio: p.precio,
-        precioFinal: precioConOferta(p.precio, oferta?.porcentaje),
+        precioFinal: aplicarOferta(p.precio, oferta?.porcentaje),
         stock: p.stock,
         imagenUrl: p.imagenUrl,
         category: p.category,
@@ -72,7 +72,7 @@ export async function getProduct(req: Request, res: Response, next: NextFunction
     const oferta = p.ofertas[0];
     res.json({
       ...p,
-      precioFinal: precioConOferta(p.precio, oferta?.porcentaje),
+      precioFinal: aplicarOferta(p.precio, oferta?.porcentaje),
       oferta: oferta
         ? { porcentaje: oferta.porcentaje, esImperdible: oferta.esImperdible }
         : null,
@@ -112,7 +112,7 @@ export async function recomendaciones(_req: Request, res: Response, next: NextFu
           id: p.id,
           nombre: p.nombre,
           precio: p.precio,
-          precioFinal: precioConOferta(p.precio, oferta?.porcentaje),
+          precioFinal: aplicarOferta(p.precio, oferta?.porcentaje),
           imagenUrl: p.imagenUrl,
           category: p.category,
           oferta: oferta
