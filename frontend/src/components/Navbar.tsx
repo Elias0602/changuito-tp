@@ -23,7 +23,7 @@ export function Navbar() {
             AUTOSERVICIO
           </span>
           <span style={{ fontSize: 22, fontWeight: 800 }}>
-            El🛒Chanquito
+            El 🛒Chanquito
           </span>
           </span>
         </Link>
