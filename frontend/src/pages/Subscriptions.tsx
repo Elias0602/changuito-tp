@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import { Plan, Subscription } from "../types";
@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { formatPrice } from "../components/ProductCard";
 
 export function Subscriptions() {
-  const { user } = useAuth();
+  const { user, refresh } = useAuth();
   const navigate = useNavigate();
   const [planes, setPlanes] = useState<Plan[]>([]);
   const [miSub, setMiSub] = useState<Subscription | null | undefined>(undefined);
@@ -14,24 +14,34 @@ export function Subscriptions() {
   const [loading, setLoading] = useState("");
   const [msg, setMsg] = useState("");
 
-  useEffect(() => {
-    api<Plan[]>("/subscriptions/planes").then(setPlanes);
-    if (user) {
-      api<Subscription | null>("/subscriptions/mia").then(setMiSub);
-    } else {
+  const cargarSub = useCallback(async () => {
+    if (!user) {
+      setMiSub(null);
+      return;
+    }
+    try {
+      const s = await api<Subscription | null>("/subscriptions/mia");
+      setMiSub(s);
+    } catch {
       setMiSub(null);
     }
   }, [user]);
+
+  useEffect(() => {
+    api<Plan[]>("/subscriptions/planes").then(setPlanes);
+    cargarSub();
+  }, [cargarSub]);
 
   async function subscribir(plan: string) {
     if (!user) return navigate("/login");
     const p = periodo === "MENSUAL" && plan === "PLUS" ? "ANUAL" : periodo;
     setLoading(plan);
+    setMsg("");
     try {
       await api("/subscriptions", { method: "POST", body: { plan, periodo: p } });
-      const sub = await api<Subscription>("/subscriptions/mia");
-      setMiSub(sub);
-      setMsg("¡Suscripción activada! Ahora tenés 50% de descuento y envíos gratis.");
+      await cargarSub();
+      await refresh();
+      setMsg(`¡Plan ${plan} activado! Ahora tenés 50% de descuento y envíos gratis.`);
     } catch (err: any) {
       setMsg("Error: " + err.message);
     } finally {
@@ -41,9 +51,14 @@ export function Subscriptions() {
 
   async function cancelar() {
     if (!confirm("¿Seguro que querés cancelar tu suscripción?")) return;
-    await api("/subscriptions", { method: "DELETE" });
-    setMiSub(null);
-    setMsg("Suscripción cancelada.");
+    try {
+      await api("/subscriptions", { method: "DELETE" });
+      await cargarSub();
+      await refresh();
+      setMsg("Suscripción cancelada.");
+    } catch (e: any) {
+      setMsg("Error: " + e.message);
+    }
   }
 
   const COLORES: Record<string, string> = {
@@ -139,7 +154,8 @@ export function Subscriptions() {
                 onClick={() => subscribir(plan.plan)}
               >
                 {loading === plan.plan ? "Procesando…" :
-                 isActivo ? "✅ Plan activo" : "Suscribirse"}
+                 isActivo ? "✅ Plan activo" :
+                 miSub ? "Cambiar a este plan" : "Suscribirse"}
               </button>
             </div>
           );

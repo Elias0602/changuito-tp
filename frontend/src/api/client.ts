@@ -30,6 +30,7 @@ export async function api<T = any>(path: string, options: Options = {}): Promise
     ...options,
     headers,
     body: options.body ? JSON.stringify(options.body) : undefined,
+    cache: "no-store",
   });
 
   if (res.status === 204) return undefined as T;

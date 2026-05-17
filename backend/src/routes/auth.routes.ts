@@ -4,6 +4,7 @@ import {
   login,
   setup2FA,
   confirm2FA,
+  disable2FA,
   verify2FALogin,
   me,
 } from "../controllers/auth.controller";
@@ -18,5 +19,6 @@ router.post("/2fa/verify-login", verify2FALogin);
 router.get("/me", authRequired, me);
 router.post("/2fa/setup", authRequired, setup2FA);
 router.post("/2fa/confirm", authRequired, confirm2FA);
+router.post("/2fa/disable", authRequired, disable2FA);
 
 export default router;
