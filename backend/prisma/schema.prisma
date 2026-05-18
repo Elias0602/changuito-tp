@@ -26,8 +26,37 @@ model User {
   carts            Cart[]
   orders           Order[]
   subscriptions    Subscription[]
+  addresses        Address[]
 
   @@index([email])
+}
+
+// Dirección de envío del cliente.
+// Lista para que el módulo de envíos y mapa la use.
+model Address {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  alias        String?  // ej "Casa", "Trabajo"
+  calle        String
+  numero       String
+  piso         String?
+  depto        String?
+  ciudad       String
+  provincia    String
+  codigoPostal String
+  referencias  String?
+
+  // Coordenadas para mostrar en mapa
+  latitud      Float?
+  longitud     Float?
+
+  esPrincipal  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model AdminProfile {

@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Product } from "../types";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { ProductImage } from "./ProductImage";
+import { useToast } from "../context/ToastContext";
 
 export function formatPrice(n: number): string {
   return n.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
@@ -12,22 +13,30 @@ export function formatPrice(n: number): string {
 export function ProductCard({ p }: { p: Product }) {
   const { add } = useCart();
   const { user } = useAuth();
-  const [adding, setAdding] = useState(false);
+  const toast = useToast();
+  const navigate = useNavigate();
+  const [state, setState] = useState<"idle" | "adding" | "added">("idle");
 
   async function handleAdd(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      window.location.href = "/login";
+      navigate("/login");
       return;
     }
-    setAdding(true);
+    setState("adding");
     try {
       await add(p.id, 1);
+      setState("added");
+      toast.success(
+        "Producto agregado",
+        p.nombre,
+        { label: "Ver carrito", onClick: () => navigate("/cart") }
+      );
+      setTimeout(() => setState("idle"), 1200);
     } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setAdding(false);
+      setState("idle");
+      toast.error("No se pudo agregar", err.message);
     }
   }
 
@@ -61,11 +70,13 @@ export function ProductCard({ p }: { p: Product }) {
         ) : null}
 
         <button
-          className="btn-add"
+          className={`btn-add ${state === "added" ? "added" : ""}`}
           onClick={handleAdd}
-          disabled={adding || p.stock === 0}
+          disabled={state !== "idle" || p.stock === 0}
         >
-          {adding ? "Agregando…" : p.stock === 0 ? "Sin stock" : "Agregar"}
+          {state === "adding" ? "Agregando…" :
+           state === "added" ? "✓ Agregado" :
+           p.stock === 0 ? "Sin stock" : "Agregar"}
         </button>
       </div>
     </Link>

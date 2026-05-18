@@ -3,12 +3,14 @@ import { useSearchParams, Link } from "react-router-dom";
 import { api } from "../api/client";
 import { Product } from "../types";
 import { ProductCard } from "../components/ProductCard";
+import { ProductGridSkeleton } from "../components/Skeleton";
 
 export function Home() {
   const [params] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [reco, setReco] = useState<{ imperdibles: Product[]; nuevos: Product[] } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [recoLoading, setRecoLoading] = useState(false);
 
   const q = params.get("q");
   const cat = params.get("cat");
@@ -28,7 +30,10 @@ export function Home() {
 
   useEffect(() => {
     if (!q && !cat && !onlyOffers) {
-      api<{ imperdibles: Product[]; nuevos: Product[] }>("/products/recomendaciones").then(setReco);
+      setRecoLoading(true);
+      api<{ imperdibles: Product[]; nuevos: Product[] }>("/products/recomendaciones")
+        .then(setReco)
+        .finally(() => setRecoLoading(false));
     } else {
       setReco(null);
     }
@@ -41,8 +46,8 @@ export function Home() {
       {showHero && (
         <div className="hero">
           <div>
-            <h1>Suscribite y ahorrá 50% en todas tus compras 🛒</h1>
-            <p>Envíos gratis ilimitados, ofertas exclusivas y atención prioritaria. Probalo este mes.</p>
+            <h1>Suscribite Plus y ahorrá 50% en todas tus compras 🛒</h1>
+            <p>Envíos gratis ilimitados, descuentos exclusivos y atención prioritaria.</p>
           </div>
           <Link to="/suscripciones" className="hero-cta">
             Ver planes →
@@ -50,12 +55,16 @@ export function Home() {
         </div>
       )}
 
-      {showHero && reco && reco.imperdibles.length > 0 && (
+      {showHero && (recoLoading || (reco && reco.imperdibles.length > 0)) && (
         <>
           <h2 className="section-title">🔥 Ofertas imperdibles</h2>
-          <div className="product-grid">
-            {reco.imperdibles.map((p) => <ProductCard key={p.id} p={p} />)}
-          </div>
+          {recoLoading ? (
+            <ProductGridSkeleton count={4} />
+          ) : (
+            <div className="product-grid">
+              {reco!.imperdibles.map((p) => <ProductCard key={p.id} p={p} />)}
+            </div>
+          )}
         </>
       )}
 
@@ -67,7 +76,7 @@ export function Home() {
       </h2>
 
       {loading ? (
-        <div className="spinner" />
+        <ProductGridSkeleton count={10} />
       ) : products.length === 0 ? (
         <div className="empty">
           <div className="empty-emoji">🔍</div>

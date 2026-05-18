@@ -10,6 +10,8 @@ import cartRoutes from "./routes/cart.routes";
 import orderRoutes from "./routes/order.routes";
 import offerRoutes from "./routes/offer.routes";
 import subscriptionRoutes from "./routes/subscription.routes";
+import addressRoutes from "./routes/address.routes";
+import chatRoutes from "./routes/chat.routes";
 import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
@@ -43,6 +45,8 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/offers", offerRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/addresses", addressRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.use(errorHandler);
 
