@@ -111,6 +111,16 @@ export async function checkoutMercadoPago(req: AuthRequest, res: Response, next:
     const cart = await validarCart(userId);
     const { subtotal, montoDescuento, envio, total } = await calcularTotales(userId, cart);
 
+    // Si ya existe una orden pendiente para este carrito, la borramos y
+    // creamos una nueva (puede pasar si el usuario abandonó MP a mitad).
+    const ordenVieja = await prisma.order.findUnique({
+      where: { cartId: cart.id },
+    });
+    if (ordenVieja && ordenVieja.estado === "PENDIENTE") {
+      await prisma.orderItem.deleteMany({ where: { orderId: ordenVieja.id } });
+      await prisma.order.delete({ where: { id: ordenVieja.id } });
+    }
+
     // Crear orden como PENDIENTE de pago (sin descontar stock todavía)
     const order = await prisma.order.create({
       data: {
