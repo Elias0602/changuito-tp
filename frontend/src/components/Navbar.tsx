@@ -71,7 +71,7 @@ export function Navbar() {
         <Link to="/" className="logo">
           <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
             <span style={{ fontSize: 11, fontWeight: 500, opacity: 0.85, letterSpacing: 1 }}>AUTOSERVICIO</span>
-            <span style={{ fontSize: 22, fontWeight: 800 }}>El 🛒 Chanquito</span>
+            <span style={{ fontSize: 22, fontWeight: 800 }}>El 🛒Changuito</span>
           </span>
         </Link>
 
