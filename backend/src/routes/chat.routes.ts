@@ -1,9 +1,8 @@
 import { Router } from "express";
-import { chat } from "../controllers/chat.controller";
+import { handleChatMessage } from "../controllers/chat.controller";
 
 const router = Router();
 
-// Sin auth - cualquiera puede hablar con el asistente
-router.post("/", chat);
+router.post("/chat", handleChatMessage);
 
 export default router;

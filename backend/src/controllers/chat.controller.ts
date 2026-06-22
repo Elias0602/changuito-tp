@@ -1,19 +1,18 @@
-import { Request, Response, NextFunction } from "express";
-import { z } from "zod";
-import { responder } from "../services/chat.service";
+import { Request, Response } from "express";
+import { getChatbotResponse } from "../services/chat.service";
 
-const chatSchema = z.object({
-  message: z.string().min(1).max(500),
-  history: z.array(z.object({
-    role: z.enum(["user", "assistant"]),
-    content: z.string(),
-  })).optional(),
-});
-
-export async function chat(req: Request, res: Response, next: NextFunction) {
+export async function handleChatMessage(req: Request, res: Response) {
   try {
-    const data = chatSchema.parse(req.body);
-    const result = await responder(data);
-    res.json(result);
-  } catch (e) { next(e); }
+    const { message, history } = req.body;
+
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({ error: "El mensaje es requerido" });
+    }
+
+    const reply = await getChatbotResponse(message, history);
+    return res.json({ reply });
+  } catch (error) {
+    console.error("Error en chatbot:", error);
+    return res.status(500).json({ error: "Error al procesar el mensaje" });
+  }
 }

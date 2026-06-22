@@ -1,4 +1,4 @@
-/* Changuito — estilos principales */
+@import 'leaflet/dist/leaflet.css';
 
 :root {
   /* Rojo cálido principal (reemplaza al amarillo MELI) */

@@ -13,6 +13,8 @@ import subscriptionRoutes from "./routes/subscription.routes";
 import addressRoutes from "./routes/address.routes";
 import chatRoutes from "./routes/chat.routes";
 import { errorHandler } from "./middlewares/errorHandler";
+import chatbotRoutes from "./routes/chat.routes";
+
 
 const app = express();
 const PORT = Number(process.env.PORT || 4000);
@@ -47,6 +49,8 @@ app.use("/api/offers", offerRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/chat", chatRoutes);
+
+app.use("/api/chatbot", chatbotRoutes);
 
 app.use(errorHandler);
 

@@ -1,7 +1,71 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api/client";
 import { useToast } from "../context/ToastContext";
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
+export function MapaDireccion({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) {
+  // Coordenadas iniciales por defecto (por ejemplo, Concordia, Entre Ríos: -31.3929, -58.0201)
+  const [position, setPosition] = useState({ lat: -31.3929, lng: -58.0201 });
+  const markerRef = useRef<any>(null);
+
+  // Maneja el arrastre del marcador
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          const newPos = marker.getLatLng();
+          setPosition(newPos);
+          onLocationSelect(newPos.lat, newPos.lng); // Le pasa las coordenadas al formulario padre
+        }
+      },
+    }),
+    [onLocationSelect],
+  );
+
+  // Permite que si hacen click en cualquier parte del mapa, el marcador se mueva ahí
+  function MapEvents() {
+    useMapEvents({
+      click(e) {
+        setPosition(e.latlng);
+        onLocationSelect(e.latlng.lat, e.latlng.lng);
+      },
+    });
+    return null;
+  }
+
+  return (
+    <div style={{ height: '350px', width: '100%', marginBottom: '20px', borderRadius: '8px', overflow: 'hidden' }}>
+      <MapContainer 
+        center={[position.lat, position.lng]} 
+        zoom={14} 
+        style={{ height: '100%', width: '100%' }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapEvents />
+        <Marker
+          draggable={true}
+          eventHandlers={eventHandlers}
+          position={[position.lat, position.lng]}
+          ref={markerRef}
+        />
+      </MapContainer>
+    </div>
+  );
+}
 interface Address {
   id: number;
   alias?: string | null;
@@ -21,7 +85,7 @@ interface Address {
 const VACIA = {
   alias: "Casa", calle: "", numero: "", piso: "", depto: "",
   ciudad: "", provincia: "", codigoPostal: "", referencias: "",
-  esPrincipal: true,
+  esPrincipal: true, latitud: -31.3929, longitud: -58.0201
 };
 
 export function Direcciones() {
@@ -81,6 +145,8 @@ export function Direcciones() {
       codigoPostal: a.codigoPostal,
       referencias: a.referencias ?? "",
       esPrincipal: a.esPrincipal,
+      latitud: a.latitud ?? -31.3929,
+      longitud: a.longitud ?? -58.0201
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -140,31 +206,11 @@ export function Direcciones() {
             <input value={form.referencias} onChange={(e) => setForm({ ...form, referencias: e.target.value })} placeholder="Casa amarilla, timbre 3" />
           </div>
 
-          {/*
-            TODO MAPA — ACÁ VA EL MÓDULO DE MAPAS
-            ------------------------------------------------------------
-            El amigo que se encarga de este módulo tiene que:
-            1. Instalar leaflet + react-leaflet (gratis, OpenStreetMap)
-               o cargar Google Maps JS API con su API key
-            2. Mostrar un mapa que reciba la dirección y permita ajustar
-               el pin con drag
-            3. Guardar las coordenadas en form.latitud y form.longitud
-            4. Opcional: geocoding automático (calle+numero -> lat/lng)
-
-            Ejemplo con Leaflet (gratis):
-              import { MapContainer, TileLayer, Marker } from "react-leaflet";
-              <MapContainer center={[-34.6, -58.4]} zoom={13}>
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <Marker position={[form.latitud, form.longitud]} draggable
-                  eventHandlers={{ dragend: (e) => { ... } }} />
-              </MapContainer>
-          */}
-          <div style={{
-            background: "#f5f5f5", borderRadius: 6, padding: 20, margin: "16px 0",
-            textAlign: "center", border: "2px dashed #ccc", color: "#888", fontSize: 13
-          }}>
-            🗺️ <strong>Mapa interactivo</strong><br/>
-            <span style={{ fontSize: 12 }}>(módulo en desarrollo — próximamente vas a poder ubicar tu casa en el mapa)</span>
+          <div className="form-group" style={{ margin: "16px 0" }}>
+            <label style={{ display: "block", marginBottom: 8 }}>Ubicación exacta en el mapa (Arrastrá el pin o hacé click)</label>
+            <MapaDireccion onLocationSelect={(lat, lng) => {
+              setForm((prev: any) => ({ ...prev, latitud: lat, longitud: lng }));
+            }} />
           </div>
 
           <div className="form-check">
