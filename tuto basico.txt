@@ -1,0 +1,87 @@
+🚀 Guía de Git para el Equipo: Autoservicio El Chanquito
+
+Para poder trabajar todos sobre el mismo código y que la página se actualice sola al subir cambios, vamos a usar este flujo de trabajo.
+Fase 1: Setup Inicial (Se hace una sola vez)
+
+Antes de tocar código, necesitan tener el proyecto en sus PCs con las configuraciones correctas.
+
+    Aceptar la invitación: El dueño del repositorio les tiene que mandar una invitación desde GitHub (Settings > Collaborators). Acéptenla.
+
+    Clonar el repositorio: Abran la terminal en la carpeta donde quieran guardar el proyecto y ejecuten:
+    Bash
+
+    git clone https://github.com/Elias0602/changuito-tp.git
+    cd changuito-tp
+
+    Instalar las dependencias: Hay que instalar los paquetes tanto del frontend como del backend:
+    Bash
+
+    cd backend
+    npm install
+    cd ../frontend
+    npm install
+
+    Configurar las variables de entorno (¡CLAVE!): Por seguridad, el archivo .env del backend no se sube a GitHub. Tienen que pedirle por privado a quien creó el proyecto que les pase el contenido exacto del .env.
+
+        Vayan a la carpeta backend/.
+
+        Abran su editor de código y creen un archivo llamado exactamente .env.
+
+        Peguen ahí las URLs de Supabase, el JWT_SECRET, el MP_ACCESS_TOKEN, etc. Sin esto, el backend no les va a arrancar en local.
+
+Fase 2: Flujo de trabajo diario (Cada vez que programen)
+
+Para evitar pisarse el código entre ustedes, siempre sigan este orden estricto:
+
+Paso 1: Traer lo último (ANTES de empezar a programar)
+Siempre que se sienten a trabajar, lo primero es bajar los cambios que hayan hecho los demás:
+Bash
+
+git pull
+
+Paso 2: Programar y probar
+Hagan todos los cambios (el mapa, la IA, etc.). Prueben en local que todo funcione bien corriendo npm run dev en el frontend y el backend.
+
+Paso 3: Preparar los cambios
+Una vez que el código funciona y lo quieren subir:
+Bash
+
+git add .
+
+Paso 4: Guardar los cambios con un mensaje
+Pongan un mensaje claro de lo que hicieron para que el resto del grupo entienda:
+Bash
+
+git commit -m "Agregado el módulo de mapas en el checkout"
+
+Paso 5: Subir a GitHub (¡Acá ocurre la magia!)
+Bash
+
+git push
+
+⚙️ ¿Qué pasa después de hacer git push?
+
+No tienen que tocar nada más. Al hacer el push:
+
+    Netlify detecta el cambio y compila el frontend automáticamente (~1 minuto).
+
+    Render detecta el cambio, instala dependencias y reinicia el backend automáticamente (~2 minutos).
+
+    ¡La página en producción ya está actualizada!
+
+⚠️ Solución rápida a conflictos comunes
+
+Si dos personas modifican el mismo archivo al mismo tiempo, al hacer git push les va a salir un error diciendo que el push fue rechazado (rejected). No entren en pánico, se soluciona así:
+
+    Ejecuten git pull.
+
+    Abran los archivos que tiran error en el editor de código. Van a ver unas marcas raras como <<<<<<< HEAD y >>>>>>>.
+
+    Borren esas marcas y dejen el código tal cual quieren que quede finalmente (combinando lo suyo y lo del compañero).
+
+    Vuelvan a repetir el ciclo de subida:
+    Bash
+
+    git add .
+    git commit -m "Resolviendo conflicto"
+    git push
