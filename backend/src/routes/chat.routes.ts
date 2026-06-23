@@ -3,6 +3,6 @@ import { handleChatMessage } from "../controllers/chat.controller";
 
 const router = Router();
 
-router.post("/chat", handleChatMessage);
+router.post("/", handleChatMessage);
 
 export default router;
