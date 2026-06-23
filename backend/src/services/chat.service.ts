@@ -12,7 +12,7 @@ export async function getChatbotResponse(
   const chat = ai.chats.create({
     model: "gemini-2.5-flash",
     history: history.map((h) => ({
-      role: h.role,
+      role: h.role === "user" ? "user" : "model",
       parts: [{ text: h.text }],
     })),
     config: {
